@@ -1,11 +1,9 @@
-FROM adoptopenjdk/openjdk11 
-      
-EXPOSE 8080
- 
-ENV APP_HOME /usr/src
+FROM maven AS maven
+WORKDIR /build
+COPY . .
+RUN mvn clean package
 
-COPY target/*.jar $APP_HOME/app.jar
-
-WORKDIR $APP_HOME
-
+FROM openjdk
+WORKDIR /app
+COPY --from=maven /build/target/app-0.1.0.jar app.jar
 CMD ["java", "-jar", "app.jar"]
